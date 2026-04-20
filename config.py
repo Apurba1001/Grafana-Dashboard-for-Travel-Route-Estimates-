@@ -1,0 +1,25 @@
+# ÖBB rail (HAFAS EVA)
+WIEN_HERNALS_EVA       = '1191701'
+WIEN_HEILIGENSTADT_EVA = '1191901'
+KREMS_EVA              = '1130101'
+
+# Nextbike
+NEXTBIKE_SYSTEM_BASE   = 'https://gbfs.nextbike.net/maps/gbfs/v2/nextbike_la/en'
+KREMS_BAHNHOF_BIKE_ID  = '42835'   # virtual station, geofenced
+KREMS_CAMPUS_BIKE_ID   = '42845'   # physical station
+
+# Coordinates
+HOME_VIENNA_LAT,   HOME_VIENNA_LON   = 48.2242, 16.3202
+KREMS_BAHNHOF_LAT, KREMS_BAHNHOF_LON = 48.4094, 15.6045
+KREMS_CAMPUS_LAT,  KREMS_CAMPUS_LON  = 48.4078, 15.5900
+
+# Walking constants (seconds)
+WALK_HOME_TO_HERNALS_S   = 7 * 60 + 70
+WALK_CAMPUS_TO_BAHNHOF_S = 19 * 60
+WALK_CAMPUS_TO_KLPU_S    = 8 * 60   # estimate
+
+# Bus 1 service (every 30 min, both Mon–Fri and Sat)
+BUS1_HEADWAY_MIN          = 30
+BUS1_FIRST_DEPARTURE_HHMM = (5, 7)
+BUS1_LAST_DEPARTURE_HHMM  = (19, 17)
+BUS1_KLPU_EVA = '?'   # to resolve at start of step 2
