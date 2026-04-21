@@ -5,7 +5,7 @@ import requests
 log = logging.getLogger(__name__)
 
 SIDECAR_URL = "http://localhost:3000"
-TIMEOUT_S = 10
+TIMEOUT_S = 20
 
 def departures(eva: str, duration_min: int = 60) -> list[dict]:
     """Fetch departures for a station. Returns a list of departure dicts.

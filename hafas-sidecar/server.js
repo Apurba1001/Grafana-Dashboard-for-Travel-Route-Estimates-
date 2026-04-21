@@ -36,6 +36,26 @@ app.get('/departures/:eva', async (req, res) => {
   }
 });
 
+// Search for stations/stops by name
+// GET /locations?query=Undstra%C3%9Fe
+app.get('/locations', async (req, res) => {
+  const query = req.query.query;
+  if (!query) return res.status(400).json({ error: 'query parameter required' });
+  try {
+    const results = await client.locations(query);
+    const slim = results.slice(0, 10).map(loc => ({
+      id:        loc.id,
+      name:      loc.name,
+      latitude:  loc.latitude,
+      longitude: loc.longitude,
+    }));
+    res.json({ query, count: slim.length, results: slim });
+  } catch (err) {
+    console.error(`/locations query=${query} failed:`, err.message);
+    res.status(502).json({ error: err.message });
+  }
+});
+
 app.listen(PORT, () => {
   console.log(`hafas-sidecar listening on http://localhost:${PORT}`);
   console.log(`  GET /health`);

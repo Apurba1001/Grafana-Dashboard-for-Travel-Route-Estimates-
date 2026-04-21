@@ -22,7 +22,7 @@ RETAIN = True
 def is_outbound_s45(dep: dict) -> bool:
     line = dep.get("line") or ""
     direction = dep.get("direction") or ""
-    return line.startswith("S 45") and "Heiligenstadt" in direction
+    return line.startswith("S 45") and "Handelskai" in direction
 
 def build_payload(deps: list[dict]) -> dict:
     return {

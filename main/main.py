@@ -9,7 +9,13 @@ from pathlib import Path
 sys.path.insert(0, str(Path(__file__).parent.parent))
 
 import mqtt_client
-from fetchers import rex4_outbound, rex4_return, s45_outbound, s45_return
+from fetchers import (
+    rex4_outbound, rex4_return,
+    s45_outbound, s45_return,
+    nextbike_krems,
+    bus1_klpu,
+)
+
 
 logging.basicConfig(
     level=logging.INFO,
@@ -27,6 +33,8 @@ def main() -> None:
     fetchers.append(rex4_return.start(client))
     fetchers.append(s45_outbound.start(client))
     fetchers.append(s45_return.start(client))
+    fetchers.append(nextbike_krems.start(client))
+    fetchers.append(bus1_klpu.start(client))
     
     # Graceful shutdown on Ctrl+C
     def shutdown(signum, frame):
