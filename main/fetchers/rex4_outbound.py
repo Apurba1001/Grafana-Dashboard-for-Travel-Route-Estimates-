@@ -10,12 +10,14 @@ import time
 
 import sidecar
 import config
+import state
 
 log = logging.getLogger(__name__)
 
+
 TOPIC = "commute/outbound/leg3/rex4/heiligenstadt/departures"
 POLL_INTERVAL_S = 30
-LOOKAHEAD_MIN = 90          # fetch 90 min of departures so filtered list is rarely empty
+LOOKAHEAD_MIN = 180         # fetch 180 min of departures so filtered list is rarely empty
 MAX_DEPARTURES_PUBLISHED = 5
 QOS = 0                     # next poll in 30s, no need for delivery guarantee
 RETAIN = True               # fresh dashboard connects should see current state
@@ -55,6 +57,7 @@ def build_payload(deps: list[dict]) -> dict:
 
 def run_once(mqtt_client) -> None:
     """Single fetch-filter-publish cycle. Logs errors, never raises."""
+    log.info(f"LOOKAHEAD_MIN={LOOKAHEAD_MIN}")
     try:
         all_deps = sidecar.departures(config.WIEN_HEILIGENSTADT_EVA, LOOKAHEAD_MIN)
     except RuntimeError as e:

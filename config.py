@@ -23,3 +23,20 @@ BUS1_KLPU_EVA = '391060'
 BUS1_HEADWAY_MIN = 30
 BUS1_FIRST_DEPARTURE_HHMM = (5, 7)   # 05:07 from Stein-Mautern (first bus touches KLPU ~05:10)
 BUS1_LAST_DEPARTURE_HHMM  = (19, 17) # 19:17 from Stein-Mautern (last bus touches KLPU ~19:20)
+
+# Leg durations (seconds) - derived metrics reference these
+RIDE_S45_HERNALS_TO_HEILIGENSTADT_S = 12 * 60
+TRANSFER_HEILIGENSTADT_S45_TO_REX_S = 2 * 60
+RIDE_REX4_HEILIGENSTADT_TO_KREMS_S  = 60 * 60
+
+# Return leg: campus → Krems Bahnhof
+WALK_CAMPUS_TO_BAHNHOF_S = 19 * 60        # already exists
+WALK_CAMPUS_TO_KLPU_S    = 8 * 60         # already exists
+BIKE_CAMPUS_TO_BAHNHOF_S = 8 * 60         # walk-to-station + unlock + ride, total
+BUS_KLPU_TO_BAHNHOF_S    = 7 * 60         # KLPU → Krems Bahnhof scheduled ride time
+
+# InfluxDB
+INFLUX_URL    = "http://localhost:8086"
+INFLUX_ORG    = "your-org-name"
+INFLUX_TOKEN  = "your-write-token"
+INFLUX_BUCKET = "commute"

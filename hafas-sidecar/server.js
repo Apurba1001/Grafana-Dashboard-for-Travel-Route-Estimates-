@@ -2,7 +2,7 @@ const express = require('express');
 const createClient = require('oebb-hafas');
 
 const app = express();
-const PORT = 3000;
+const PORT = 3001;
 const client = createClient('commute-dashboard');
 
 // Health check — Python uses this to confirm sidecar is up
