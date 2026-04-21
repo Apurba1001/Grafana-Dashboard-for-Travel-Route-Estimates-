@@ -1,0 +1,86 @@
+"""REX 4 trains from Krems/Donau toward Wien.
+
+Publishes the next N departures (filtered to REX 4 heading toward Vienna) every
+POLL_INTERVAL seconds on commute/return/leg2/rex4/krems/departures.
+"""
+import json
+import logging
+import threading
+import time
+
+import sidecar
+import config
+
+log = logging.getLogger(__name__)
+
+TOPIC = "commute/return/leg2/rex4/krems/departures"
+POLL_INTERVAL_S = 30
+LOOKAHEAD_MIN = 90
+MAX_DEPARTURES_PUBLISHED = 5
+QOS = 0
+RETAIN = True
+
+def is_return_to_vienna(dep: dict) -> bool:
+    line = dep.get("line") or ""
+    direction = dep.get("direction") or ""
+    return (
+        line.startswith("REX 4 ")
+        and ("Franz-Josefs" in direction or "Wien" in direction)
+    )
+
+def build_payload(deps: list[dict]) -> dict:
+    return {
+        "topic": TOPIC,
+        "fetched_at": int(time.time()),
+        "source": "hafas",
+        "station_eva": config.KREMS_EVA,
+        "station_name": "Krems an der Donau",
+        "direction_filter": "Wien",
+        "line_filter": "REX 4",
+        "count": len(deps),
+        "departures": [
+            {
+                "when":         d.get("when"),
+                "planned_when": d.get("plannedWhen"),
+                "delay_s":      d.get("delay"),
+                "line":         (d.get("line") or "").split(" (Zug-Nr")[0].strip(),
+                "direction":    d.get("direction"),
+                "platform":     d.get("platform"),
+                "cancelled":    d.get("cancelled", False),
+                "trip_id":      d.get("tripId"),
+            }
+            for d in deps
+        ],
+    }
+
+def run_once(mqtt_client) -> None:
+    try:
+        all_deps = sidecar.departures(config.KREMS_EVA, LOOKAHEAD_MIN)
+    except RuntimeError as e:
+        log.error(f"fetch failed: {e}")
+        return
+    
+    filtered = [d for d in all_deps if is_return_to_vienna(d)]
+    filtered = filtered[:MAX_DEPARTURES_PUBLISHED]
+    
+    payload = build_payload(filtered)
+    info = mqtt_client.publish(TOPIC, json.dumps(payload), qos=QOS, retain=RETAIN)
+    log.info(f"published {len(filtered)} REX 4 return departures (mid={info.mid})")
+
+def loop(mqtt_client, stop_event: threading.Event) -> None:
+    log.info(f"starting loop (every {POLL_INTERVAL_S}s)")
+    while not stop_event.is_set():
+        run_once(mqtt_client)
+        stop_event.wait(POLL_INTERVAL_S)
+    log.info("loop stopped")
+
+def start(mqtt_client) -> tuple[threading.Thread, threading.Event]:
+    stop_event = threading.Event()
+    thread = threading.Thread(
+        target=loop,
+        args=(mqtt_client, stop_event),
+        name="rex4-return",
+        daemon=True,
+    )
+    thread.start()
+    return thread, stop_event

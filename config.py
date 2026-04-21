@@ -18,8 +18,8 @@ WALK_HOME_TO_HERNALS_S   = 7 * 60 + 70
 WALK_CAMPUS_TO_BAHNHOF_S = 19 * 60
 WALK_CAMPUS_TO_KLPU_S    = 8 * 60   # estimate
 
-# Bus 1 service (every 30 min, both Mon–Fri and Sat)
-BUS1_HEADWAY_MIN          = 30
-BUS1_FIRST_DEPARTURE_HHMM = (5, 7)
-BUS1_LAST_DEPARTURE_HHMM  = (19, 17)
-BUS1_KLPU_EVA = '?'   # to resolve at start of step 2
+# Kremser Stadtbus - Line 1 stop (for return leg: Campus → Bahnhof)
+BUS1_KLPU_EVA = '391060'
+BUS1_HEADWAY_MIN = 30
+BUS1_FIRST_DEPARTURE_HHMM = (5, 7)   # 05:07 from Stein-Mautern (first bus touches KLPU ~05:10)
+BUS1_LAST_DEPARTURE_HHMM  = (19, 17) # 19:17 from Stein-Mautern (last bus touches KLPU ~19:20)
