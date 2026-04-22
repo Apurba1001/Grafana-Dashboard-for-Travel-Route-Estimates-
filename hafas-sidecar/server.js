@@ -15,17 +15,35 @@ app.get('/health', (req, res) => {
 app.get('/departures/:eva', async (req, res) => {
   const eva = req.params.eva;
   const duration = parseInt(req.query.duration || '60', 10);
+  const railOnly = req.query.rail_only === 'true';
   
+  const options = { duration };
+  if (railOnly) {
+    // oebb-hafas product codes: 'nationalExpress', 'national', 'interregional',
+    // 'regional', 'suburban' are the rail classes. Exclude bus, tram, U-Bahn.
+    options.products = {
+      nationalExpress: true,
+      national:        true,
+      interregional:   true,
+      regional:        true,
+      suburban:        true,
+      bus:             false,
+      tram:            false,
+      subway:          false,
+      ferry:           false,
+      taxi:            false,
+    };
+  }
+
   try {
-    const deps = await client.departures(eva, { duration });
-    // Slim the response — Python doesn't need all the HAFAS metadata
+    const deps = await client.departures(eva, options);
     const slim = deps.map(d => ({
       tripId:    d.tripId,
       line:      d.line?.name,
       direction: d.direction,
-      when:      d.when,            // ISO timestamp with realtime
-      plannedWhen: d.plannedWhen,   // ISO timestamp scheduled
-      delay:     d.delay,           // seconds, may be null
+      when:      d.when,
+      plannedWhen: d.plannedWhen,
+      delay:     d.delay,
       platform:  d.platform,
       cancelled: d.cancelled || false,
     }));

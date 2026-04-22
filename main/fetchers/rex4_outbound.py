@@ -59,7 +59,7 @@ def run_once(mqtt_client) -> None:
     """Single fetch-filter-publish cycle. Logs errors, never raises."""
     log.info(f"LOOKAHEAD_MIN={LOOKAHEAD_MIN}")
     try:
-        all_deps = sidecar.departures(config.WIEN_HEILIGENSTADT_EVA, LOOKAHEAD_MIN)
+        all_deps = sidecar.departures(config.WIEN_HEILIGENSTADT_EVA, LOOKAHEAD_MIN, rail_only=True)
     except RuntimeError as e:
         log.error(f"fetch failed: {e}")
         return
