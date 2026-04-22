@@ -4,16 +4,14 @@ import requests
 
 log = logging.getLogger(__name__)
 
-SIDECAR_URL = "http://localhost:3000"
+SIDECAR_URL = "http://localhost:3001"
 TIMEOUT_S = 20
 
-def departures(eva: str, duration_min: int = 60) -> list[dict]:
-    """Fetch departures for a station. Returns a list of departure dicts.
-    
-    Raises RuntimeError on any failure so callers can catch once.
-    """
+def departures(eva: str, duration_min: int = 60, rail_only: bool = False) -> list[dict]:
     url = f"{SIDECAR_URL}/departures/{eva}"
     params = {"duration": duration_min}
+    if rail_only:
+        params["rail_only"] = "true"
     try:
         r = requests.get(url, params=params, timeout=TIMEOUT_S)
         r.raise_for_status()

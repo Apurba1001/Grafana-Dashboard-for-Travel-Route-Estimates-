@@ -62,6 +62,7 @@ def run_once(mqtt_client) -> None:
     payload = build_payload(filtered)
     info = mqtt_client.publish(TOPIC, json.dumps(payload), qos=QOS, retain=RETAIN)
     log.info(f"published {len(filtered)} S 45 outbound departures (mid={info.mid})")
+    
 
 def loop(mqtt_client, stop_event: threading.Event) -> None:
     log.info(f"starting loop (every {POLL_INTERVAL_S}s)")

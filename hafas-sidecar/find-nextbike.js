@@ -5,34 +5,26 @@ function fetch(url) {
     https.get(url, res => {
       let data = '';
       res.on('data', chunk => data += chunk);
-      res.on('end', () => resolve(JSON.parse(data)));
+      res.on('end', () => resolve({ status: res.statusCode, body: data }));
       res.on('error', reject);
     }).on('error', reject);
   });
 }
 
-const STATIONS = {
-  '42835': 'Krems / Bahnhof',
-  '42845': 'Krems / Campus Donau Uni Krems',
-};
-
 (async () => {
-  const json = await fetch('https://gbfs.nextbike.net/maps/gbfs/v2/nextbike_la/en/station_status.json');
-  const stations = json.data?.stations || [];
+  // First try the per-system file we used before
+  const direct = await fetch('https://gbfs.nextbike.net/maps/gbfs/v2/nextbike_la/gbfs.json');
+  console.log('nextbike_la direct status:', direct.status);
   
-  for (const [id, label] of Object.entries(STATIONS)) {
-    const s = stations.find(x => x.station_id === id);
-    if (!s) {
-      console.log(`${label} (${id}): NOT FOUND in station_status`);
-      continue;
-    }
-    console.log(`${label} (${id}):`);
-    console.log(`  bikes available: ${s.num_bikes_available}`);
-    console.log(`  docks available: ${s.num_docks_available}`);
-    console.log(`  installed:       ${s.is_installed}`);
-    console.log(`  renting:         ${s.is_renting}`);
-    console.log(`  returning:       ${s.is_returning}`);
-    console.log(`  last reported:   ${s.last_reported ? new Date(s.last_reported * 1000).toLocaleString('de-AT') : '?'}`);
-    console.log('');
+  // Now try a few likely candidates for "Lower Austria"
+  const candidates = ['nextbike_la', 'nextbike_no', 'nextbike_noe', 'nextbike_at', 'nextbike_lan'];
+  for (const sys of candidates) {
+    const url = `https://gbfs.nextbike.net/maps/gbfs/v2/${sys}/gbfs.json`;
+    const r = await fetch(url);
+    console.log(`${sys}: ${r.status}`);
   }
+  
+  // Also try the v3 path - they may have migrated
+  const v3 = await fetch('https://gbfs.nextbike.net/maps/gbfs/v3/nextbike_la/gbfs.json');
+  console.log('v3 nextbike_la status:', v3.status);
 })();
