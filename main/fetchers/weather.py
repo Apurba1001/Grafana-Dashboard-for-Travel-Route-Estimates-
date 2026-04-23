@@ -18,7 +18,7 @@ log = logging.getLogger(__name__)
 FORECAST_URL = "https://api.open-meteo.com/v1/forecast"
 AIRQUAL_URL  = "https://air-quality-api.open-meteo.com/v1/air-quality"
 TIMEOUT_S = 10
-POLL_INTERVAL_S = 15 * 60   # 15 minutes - weather updates hourly upstream
+POLL_INTERVAL_S = 300   # 15 minutes - weather updates hourly upstream
 QOS = 0
 RETAIN = True
 
